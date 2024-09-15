@@ -64,7 +64,9 @@ public class ProductService implements ProductServiceInt{
         ProductResponse response = new ProductResponse();
         products.forEach(p -> productSet.add(convertToDTO(p)));
         response.setProducts(productSet);
-
+        if (response.getProducts().isEmpty()) {
+            throw new ProductNotFoundException("No products are found for the entered criteria.");
+        }
         return response;
     }
 

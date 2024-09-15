@@ -49,19 +49,9 @@ public class ProductController {
             @RequestParam(required = false) String state
             ){
         ProductResponse response = new ProductResponse();
-        if (name == null && category == null && state == null) {
-            try {
-                response = productService.getAllProducts();
-                return ResponseEntity.ok(response);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-                return new ResponseEntity<>(null, HttpStatusCode.valueOf(500));
-            }
-        }
-        else {
-            response = productService.getFilteredProducts(name, category, state);
-            return ResponseEntity.ok(response);
-        }
+        response = productService.getFilteredProducts(name, category, state);
+        return ResponseEntity.ok(response);
+
     }
 
 
