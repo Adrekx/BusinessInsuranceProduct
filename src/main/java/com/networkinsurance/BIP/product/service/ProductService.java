@@ -1,21 +1,16 @@
 package com.networkinsurance.BIP.product.service;
 
-import com.networkinsurance.BIP.category.repository.CategoryRepository;
 import com.networkinsurance.BIP.exception.ProductNotFoundException;
 import com.networkinsurance.BIP.helper.CriteriaHelper;
 import com.networkinsurance.BIP.product.dto.ProductDTO;
 import com.networkinsurance.BIP.product.dto.ProductResponse;
 import com.networkinsurance.BIP.product.entity.ProductEntity;
 import com.networkinsurance.BIP.product.repository.ProductRepository;
-import com.networkinsurance.BIP.state.repository.StateRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jakarta.persistence.criteria.*;
-
+import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 
 @Service
@@ -28,9 +23,6 @@ public class ProductService implements ProductServiceInt{
 
     @Autowired
     private CriteriaHelper criteriaHelper;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Override
     public ProductResponse getAllProducts() throws Exception{
@@ -53,10 +45,14 @@ public class ProductService implements ProductServiceInt{
 
     @Override
     public ProductResponse getFilteredProducts(String name, String category, String state) {
-        Map<String, String> filtersMap = new HashMap<>();
-        filtersMap.put("name", name);
-        filtersMap.put("categories", category);
-        filtersMap.put("state", state);
+        Map<SimpleEntry<Integer,String>, String> filtersMap = new HashMap<>();
+
+//      If 0 => It's direct field of the table else it's FK relationship
+//      Remember all the Entities are following the "entityName" as just "name" while setting the variable in the entity class
+//      (i.e. check the entity classes of Product, State, and Category)
+        filtersMap.put(new SimpleEntry<>(0, "name"), name);
+        filtersMap.put(new SimpleEntry<>(1,"categories"), category);
+        filtersMap.put(new SimpleEntry<>(1,"state"), state);
         List<ProductEntity> products = new ArrayList<>();
 
         criteriaHelper.buildTheCriteriaQuery(ProductEntity.class, filtersMap , products);
